@@ -42,7 +42,7 @@
   "devDependencies": {
     "json-schema-to-typescript": "^15.0.4",
     "tsx": "^4.19.4",
-    "zod": "^3.24.4",
+    "zod": "^4.0.17",
     "zod-to-json-schema": "^3.24.5"
   }
 }
