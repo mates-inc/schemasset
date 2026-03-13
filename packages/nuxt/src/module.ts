@@ -66,7 +66,7 @@ export default defineNuxtModule<ModuleOptions>({
     name: "@schemasset/nuxt",
     configKey: "schemasset",
     compatibility: {
-      nuxt: "^3.0.0",
+      nuxt: ">=3.0.0",
     },
   },
   defaults: {
