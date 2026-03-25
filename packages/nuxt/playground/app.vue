@@ -7,22 +7,22 @@
     <div class="assets">
       <div class="asset-item">
         <h3>Logo</h3>
-        <img src="/logo.png" alt="Logo" height="100">
+        <img src="/logo.png" alt="Logo" height="100" />
       </div>
 
       <div class="asset-item">
         <h3>Favicon</h3>
-        <img src="/favicon.ico" alt="Favicon" height="32">
+        <img src="/favicon.ico" alt="Favicon" height="32" />
       </div>
 
       <div class="asset-item">
         <h3>OG Image</h3>
-        <img src="/og-image.png" alt="OG Image" height="100">
+        <img src="/og-image.png" alt="OG Image" height="100" />
       </div>
 
       <div class="asset-item">
         <h3>Header Logo</h3>
-        <img src="/header-logo.png" alt="Header Logo" height="100">
+        <img src="/header-logo.png" alt="Header Logo" height="100" />
       </div>
     </div>
   </div>
@@ -33,7 +33,14 @@
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
 }
 
 h1 {
@@ -66,7 +73,7 @@ select {
 }
 
 .reload-btn {
-  background: #4CAF50;
+  background: #4caf50;
   color: white;
   border: none;
   padding: 0.5rem 1rem;

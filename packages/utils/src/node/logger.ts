@@ -85,11 +85,9 @@ export class Logger {
     // Handle level prefix coloring separately
     if (levelPrefix && this.useColors && levelColor) {
       parts.push(`${levelColor}${levelPrefix}${resetColor} ${message}`);
-    }
-    else if (levelPrefix) {
+    } else if (levelPrefix) {
       parts.push(`${levelPrefix} ${message}`);
-    }
-    else {
+    } else {
       parts.push(message);
     }
 
@@ -119,8 +117,7 @@ export class Logger {
       args.forEach((arg) => {
         if (typeof arg === "object") {
           this.writeStdout(JSON.stringify(arg, null, 2));
-        }
-        else {
+        } else {
           this.writeStdout(String(arg));
         }
       });
@@ -136,8 +133,7 @@ export class Logger {
       args.forEach((arg) => {
         if (typeof arg === "object") {
           this.writeStdout(JSON.stringify(arg, null, 2));
-        }
-        else {
+        } else {
           this.writeStdout(String(arg));
         }
       });
@@ -153,8 +149,7 @@ export class Logger {
       args.forEach((arg) => {
         if (typeof arg === "object") {
           this.writeStdout(JSON.stringify(arg, null, 2));
-        }
-        else {
+        } else {
           this.writeStdout(String(arg));
         }
       });
@@ -170,8 +165,7 @@ export class Logger {
       args.forEach((arg) => {
         if (typeof arg === "object") {
           this.writeStderr(JSON.stringify(arg, null, 2));
-        }
-        else {
+        } else {
           this.writeStderr(String(arg));
         }
       });
@@ -187,8 +181,7 @@ export class Logger {
       args.forEach((arg) => {
         if (typeof arg === "object") {
           this.writeStderr(JSON.stringify(arg, null, 2));
-        }
-        else {
+        } else {
           this.writeStderr(String(arg));
         }
       });
@@ -204,8 +197,7 @@ export class Logger {
       args.forEach((arg) => {
         if (typeof arg === "object") {
           this.writeStdout(JSON.stringify(arg, null, 2));
-        }
-        else {
+        } else {
           this.writeStdout(String(arg));
         }
       });

@@ -2,27 +2,32 @@
   "compilerOptions": {
     "target": "ESNext",
     "lib": ["ESNext", "DOM"],
-    "baseUrl": ".",
-    "module": "ESNext",
-    "moduleResolution": "node",
+    "module": "Preserve",
+    "moduleResolution": "Bundler",
     "paths": {
-      "@schemasset/*": ["packages/*/src"]
+      "@schemasset/cli": ["./packages/cli/src/index.ts"],
+      "@schemasset/core": ["./packages/core/src/index.ts"],
+      "@schemasset/nuxt": ["./packages/nuxt/src/index.ts"],
+      "@schemasset/schema": ["./packages/schema/src/index.ts"],
+      "@schemasset/utils": ["./packages/utils/src/index.ts"]
     },
+    "types": ["node"],
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "declaration": true,
-    "declarationMap": true,
-    "emitDeclarationOnly": true,
-    "outDir": "types",
     "esModuleInterop": true,
-    "isolatedDeclarations": true,
     "verbatimModuleSyntax": true,
     "erasableSyntaxOnly": true,
+    "noEmit": true,
     "skipDefaultLibCheck": true,
     "skipLibCheck": true
   },
   "include": [
-    "packages"
+    "vite.config.ts",
+    "packages/*/build.config.ts",
+    "packages/*/src",
+    "packages/*/vite.config.ts",
+    "packages/schema/scripts",
+    "test"
   ]
 }

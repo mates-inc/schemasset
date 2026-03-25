@@ -48,7 +48,7 @@ export default defineNuxtConfig({
         { pattern: "**/favicon.ico" },
         { pattern: "**/logo.png" },
         { pattern: "**/og-image.png" },
-        { pattern: "**/header-logo.png", optional: true }
+        { pattern: "**/header-logo.png", optional: true },
       ],
     },
     build: {
@@ -56,7 +56,7 @@ export default defineNuxtConfig({
       outDir: "public",
     },
     failOnError: false,
-  }
+  },
 });
 ```
 

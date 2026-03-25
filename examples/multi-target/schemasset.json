@@ -1,0 +1,5 @@
+{
+  "$schema": "../../packages/schema/dist/schema.json",
+  "targetDir": ["./dynamic-assets-a", "./dynamic-assets-b"],
+  "files": [{ "pattern": "*/logo.png" }, { "pattern": "*/favicon.ico" }]
+}

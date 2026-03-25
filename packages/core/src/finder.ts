@@ -8,7 +8,7 @@ export const DEFAULT_SCHEMA_FILES = [
   "schemasset.yml",
 ] as const;
 
-export type SchemaFileExtension = typeof DEFAULT_SCHEMA_FILES[number];
+export type SchemaFileExtension = (typeof DEFAULT_SCHEMA_FILES)[number];
 
 export interface FinderOptions {
   cwd?: string;

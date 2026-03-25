@@ -1,7 +1,7 @@
 {
   "name": "schemasset-nuxt-playground",
-  "type": "module",
   "private": true,
+  "type": "module",
   "scripts": {
     "postinstall": "nuxi prepare",
     "dev": "nuxi dev",
