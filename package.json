@@ -9,15 +9,15 @@
     "static-assets",
     "validation"
   ],
-  "homepage": "https://github.com/mates-system/schemasset#readme",
+  "homepage": "https://github.com/mates-inc/schemasset#readme",
   "bugs": {
-    "url": "https://github.com/mates-system/schemasset/issues"
+    "url": "https://github.com/mates-inc/schemasset/issues"
   },
   "license": "MIT",
   "author": "ubugeeei",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mates-system/schemasset"
+    "url": "https://github.com/mates-inc/schemasset"
   },
   "type": "module",
   "devDependencies": {
