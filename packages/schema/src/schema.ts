@@ -32,7 +32,3 @@ export const schemaDocumentDef = v.union([
   schemaDef,
   v.pipe(v.array(schemaDef), v.minLength(1, "At least one schema definition must be specified")),
 ]);
-
-export function normalizeTargetDirs(targetDir: SchemaDef["targetDir"]): string[] {
-  return Array.isArray(targetDir) ? targetDir : [targetDir];
-}
