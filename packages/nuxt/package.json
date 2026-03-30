@@ -1,33 +1,27 @@
 {
   "name": "@schemasset/nuxt",
-  "type": "module",
   "version": "0.0.7",
   "description": "Nuxt module for schemasset - schema-based asset file validation",
-  "author": "Mates System",
-  "license": "MIT",
-  "homepage": "https://github.com/mates-system/schemasset/tree/main/packages/nuxt#readme",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/mates-system/schemasset"
-  },
-  "bugs": {
-    "url": "https://github.com/mates-system/schemasset/issues"
-  },
   "keywords": [
+    "asset",
+    "file-structure",
     "nuxt",
     "nuxt-module",
-    "asset",
     "schema",
-    "validation",
-    "file-structure",
-    "static-assets"
+    "static-assets",
+    "validation"
   ],
-  "exports": {
-    ".": {
-      "types": "./dist/types.d.mts",
-      "import": "./dist/module.mjs"
-    }
+  "homepage": "https://github.com/mates-inc/schemasset/tree/main/packages/nuxt#readme",
+  "bugs": {
+    "url": "https://github.com/mates-inc/schemasset/issues"
   },
+  "license": "MIT",
+  "author": "Mates System",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mates-inc/schemasset"
+  },
+  "type": "module",
   "main": "./dist/module.mjs",
   "typesVersions": {
     "*": {
@@ -36,18 +30,24 @@
       ]
     }
   },
-  "scripts": {
-    "build": "nuxt-module-build build"
+  "exports": {
+    ".": {
+      "types": "./dist/types.d.mts",
+      "import": "./dist/module.mjs"
+    }
   },
-  "peerDependencies": {
-    "nuxt": "^3.0.0 || ^4.0.0"
-  },
-  "devDependencies": {
+  "dependencies": {
     "@nuxt/kit": "^3.11.1",
-    "@nuxt/module-builder": "^1.0.1",
     "@schemasset/core": "workspace:*",
     "@schemasset/utils": "workspace:*",
     "defu": "^6.1.4",
     "fast-glob": "^3.3.3"
+  },
+  "devDependencies": {
+    "@nuxt/module-builder": "^1.0.1",
+    "unbuild": "^3.5.0"
+  },
+  "peerDependencies": {
+    "nuxt": "^3.0.0 || ^4.0.0"
   }
 }

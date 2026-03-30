@@ -1,33 +1,34 @@
-import { z } from "zod";
+import * as v from "valibot";
 
-export type SchemaDef = z.infer<typeof schemaDef>;
+export type SchemaDef = v.InferOutput<typeof schemaDef>;
 
-export type SchemaDefFile = z.infer<typeof schemaDefFile>;
+export type SchemaDocument = v.InferOutput<typeof schemaDocumentDef>;
 
-z.setErrorMap((issue, ctx) => {
-  switch (issue.code) {
-    case z.ZodIssueCode.invalid_type:
-      return { message: `Expected ${issue.expected}, received ${issue.received}` };
-    default:
-      return { message: ctx.defaultError };
-  }
+export type SchemaDefFile = v.InferOutput<typeof schemaDefFile>;
+
+export const schemaDefFile = v.strictObject({
+  pattern: v.pipe(v.string(), v.minLength(1, "Pattern must not be empty")),
+  optional: v.optional(v.boolean()),
 });
 
-export const schemaDefFile: z.ZodObject<{
-  pattern: z.ZodString;
-  optional: z.ZodOptional<z.ZodBoolean>;
-}> = z.object({
-  /** target files as glob pattern */
-  pattern: z.string().min(1, "Pattern must not be empty"),
-  /** @default false */
-  optional: z.boolean().optional(),
-}).strict();
+export const targetDirDef = v.union([
+  v.pipe(v.string(), v.minLength(1, "Target directory must not be empty")),
+  v.pipe(
+    v.array(v.pipe(v.string(), v.minLength(1, "Target directory must not be empty"))),
+    v.minLength(1, "At least one target directory must be specified"),
+  ),
+]);
 
-export const schemaDef: z.ZodObject<{
-  targetDir: z.ZodString;
-  files: z.ZodArray<typeof schemaDefFile>;
-}> = z.object({
-  $schema: z.string().optional(),
-  targetDir: z.string().min(1, "Target directory must not be empty"),
-  files: z.array(schemaDefFile).min(1, "At least one file pattern must be specified"),
-}).strict();
+export const schemaDef = v.strictObject({
+  $schema: v.optional(v.string()),
+  targetDir: targetDirDef,
+  files: v.pipe(
+    v.array(schemaDefFile),
+    v.minLength(1, "At least one file pattern must be specified"),
+  ),
+});
+
+export const schemaDocumentDef = v.union([
+  schemaDef,
+  v.pipe(v.array(schemaDef), v.minLength(1, "At least one schema definition must be specified")),
+]);

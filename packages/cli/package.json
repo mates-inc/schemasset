@@ -1,37 +1,45 @@
 {
   "name": "@schemasset/cli",
-  "type": "module",
   "version": "0.0.7",
   "description": "CLI tool for schemasset - schema-based asset file validation",
-  "author": "ubugeeei",
-  "license": "MIT",
-  "homepage": "https://github.com/mates-system/schemasset/tree/main/packages/cli#readme",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/mates-system/schemasset"
-  },
-  "bugs": {
-    "url": "https://github.com/mates-system/schemasset/issues"
-  },
   "keywords": [
     "asset",
-    "schema",
-    "validation",
+    "cli",
     "file-structure",
-    "cli"
+    "schema",
+    "validation"
   ],
+  "homepage": "https://github.com/mates-inc/schemasset/tree/main/packages/cli#readme",
+  "bugs": {
+    "url": "https://github.com/mates-inc/schemasset/issues"
+  },
+  "license": "MIT",
+  "author": "ubugeeei",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mates-inc/schemasset"
+  },
   "bin": {
-    "schemasset": "./dist/index.js"
+    "schemasset": "./dist/index.mjs"
   },
   "files": [
     "dist"
   ],
-  "scripts": {
-    "build": "tsdown"
+  "type": "module",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      }
+    }
   },
-  "devDependencies": {
+  "dependencies": {
     "@schemasset/core": "workspace:*",
     "@schemasset/utils": "workspace:*",
-    "citty": "^0.1.6"
+    "gunshi": "^0.29.3"
   }
 }

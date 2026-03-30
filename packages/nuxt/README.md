@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://github.com/mates-system/schemasset/blob/main/assets/schemasset.png?raw=true" alt="schemasset logo" height="150" width="150">
+  <img src="https://github.com/mates-inc/schemasset/blob/main/assets/schemasset.png?raw=true" alt="schemasset logo" height="150" width="150">
 
 # @schemasset/nuxt
 
@@ -49,8 +49,8 @@ export default defineNuxtConfig({
       files: [
         { pattern: "**/favicon.ico" },
         { pattern: "**/logo.png" },
-        { pattern: "**/og-image.png", optional: true }
-      ]
+        { pattern: "**/og-image.png", optional: true },
+      ],
     },
 
     // Or use a schema file path
@@ -71,23 +71,23 @@ export default defineNuxtConfig({
       subdir: "domain-a",
 
       // Output directory (default: 'assets')
-      outDir: "public"
-    }
-  }
+      outDir: "public",
+    },
+  },
 });
 ```
 
 ## Configuration Options
 
-| Option | Type | Default | Description |
-| --- | --- | --- | --- |
-| `schema` | `Object` | `undefined` | Inline schema definition |
-| `schemaPath` | `String` | `undefined` | Path to schema file |
-| `checkOnBuild` | `Boolean` | `true` | Whether to validate assets during build |
-| `failOnError` | `Boolean` | `true` | Whether to fail the build on error |
-| `verbose` | `Boolean` | `false` | Whether to show detailed logs during validation and build |
-| `build.subdir` | `String` | `undefined` | Subdirectory of assets to publish |
-| `build.outDir` | `String` | `'assets'` | Output directory for public assets |
+| Option         | Type      | Default     | Description                                               |
+| -------------- | --------- | ----------- | --------------------------------------------------------- |
+| `schema`       | `Object`  | `undefined` | Inline schema definition                                  |
+| `schemaPath`   | `String`  | `undefined` | Path to schema file                                       |
+| `checkOnBuild` | `Boolean` | `true`      | Whether to validate assets during build                   |
+| `failOnError`  | `Boolean` | `true`      | Whether to fail the build on error                        |
+| `verbose`      | `Boolean` | `false`     | Whether to show detailed logs during validation and build |
+| `build.subdir` | `String`  | `undefined` | Subdirectory of assets to publish                         |
+| `build.outDir` | `String`  | `'assets'`  | Output directory for public assets                        |
 
 ## How It Works
 
@@ -97,6 +97,7 @@ export default defineNuxtConfig({
 4. **Public Directory Support**: If assets are located within Nuxt's public directory, paths are automatically adjusted
 
 When a `build.subdir` is specified, the module will:
+
 - In production: Configure those assets to be available under the specified `build.outDir` URL path
 - In development: Set up a virtual server middleware that handles 404s and serves assets from that directory under the same URL structure
 
@@ -114,17 +115,14 @@ export default defineNuxtConfig({
   schemasset: {
     schema: {
       targetDir: "public-dyn",
-      files: [
-        { pattern: "**/favicon.ico" },
-        { pattern: "**/logo.png" }
-      ]
+      files: [{ pattern: "**/favicon.ico" }, { pattern: "**/logo.png" }],
     },
     build: {
       // Can be dynamically set based on environment variables or runtime config
       subdir: process.env.DOMAIN || "domain-a",
-      outDir: "public"
-    }
-  }
+      outDir: "public",
+    },
+  },
 });
 ```
 

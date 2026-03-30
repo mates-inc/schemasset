@@ -1,46 +1,35 @@
 <div align="center">
 
-  <img src="https://github.com/mates-system/schemasset/blob/main/assets/schemasset.png?raw=true" alt="schemasset logo" height="150" width="150">
+  <img src="https://github.com/mates-inc/schemasset/blob/main/assets/schemasset.png?raw=true" alt="schemasset logo" height="150" width="150">
 
 # schemasset
 
-A schema-based tool for asset file validation
+A schema-based tool for asset file validation.
 
 </div>
 
 > [!TIP]
 > The name "schemasset" is derived from "schemed asset", referring to assets that are validated against a defined schema.
 
-## 🎯 Motivation
+## Motivation
 
-Managing asset files (images, icons, etc.) across multiple domains or projects can become complex. Common challenges include:
+Managing asset files across multiple domains, brands, or projects gets messy quickly.
 
-- Verifying that required assets exist across multiple domains (subdirectories)
-- Ensuring that mandatory assets (logos, favicons, OG images, etc.) are present in each domain without omissions
-- Allowing some assets to be optional while enforcing specific patterns when they do exist
+- Required assets need to exist in every subdirectory.
+- Some assets are optional, but when they exist they still need to follow a pattern.
+- Different asset roots often need to be checked in one pass.
 
-`schemasset` addresses these asset management challenges through schema-based definitions.
+`schemasset` turns those rules into a portable schema and checks them from the CLI or from code.
 
-### 🌐 Example: Multi-domain Asset Management
+## Installation
 
-Consider an asset directory structure like this:
-
-```txt
-dynamic-assets/
-  domain-a/
-    favicon.ico
-    header-logo.png
-    logo.png
-    og-image.png
-  domain-b/
-    logo.png
-    og-image.png
-  domain-c/
-    favicon.ico
-    logo.png
+```bash
+pnpm add -D @schemasset/cli
 ```
 
-You can define required file structures for each domain in a schema definition file (`schemasset.json`):
+## Usage
+
+Create a `schemasset.json` or `schemasset.yaml` in your project.
 
 ```json
 {
@@ -55,152 +44,125 @@ You can define required file structures for each domain in a schema definition f
 }
 ```
 
-Running the CLI performs checks for required files:
+Then run:
 
 ```bash
-npx schemasset check
+pnpm dlx schemasset check --config ./schemasset.json
 ```
 
-In this example, errors would be shown because domain-b is missing favicon.ico and domain-c is missing og-image.png.
-
-## 🔌 Integrations
-
-### Nuxt Module
-
-`@schemasset/nuxt` allows you to integrate schema-based asset validation directly into your Nuxt projects. This module provides seamless verification of assets during the build process and can publish specific asset subdirectories.
-
-[Read more about the Nuxt module](./packages/nuxt/README.md)
-
-## 📦 Installation
+Or, if the schema file is in the current directory:
 
 ```bash
-# npm
-npm install -D @schemasset/cli
-
-# yarn
-yarn add -D @schemasset/cli
-
-# pnpm
-pnpm add -D @schemasset/cli
+pnpm dlx schemasset check
 ```
 
-## 🚀 Usage
+### CLI Options
 
-### 1. Create a Schema File
+| Option     | Alias | Description                                                    |
+| ---------- | ----- | -------------------------------------------------------------- |
+| `--config` | `-c`  | Path to the schema file                                        |
+| `--cwd`    | `-d`  | Working directory used for schema discovery and relative paths |
 
-Create a `schemasset.json` or `schemasset.yaml` in your project's root directory:
+## Multiple Directories
 
-#### JSON Format
+If the same file rules should be applied to multiple asset roots, `targetDir` can be an array.
 
 ```json
 {
   "$schema": "node_modules/@schemasset/schema/dist/schema.json",
-  "targetDir": "./path/to/assets",
-  "files": [
-    { "pattern": "*/logo.png" },
-    { "pattern": "*/favicon.ico" },
-    { "pattern": "*/og-image.png" },
-    { "pattern": "*/header-logo.png", "optional": true }
-  ]
+  "targetDir": ["./dynamic-assets-a", "./dynamic-assets-b"],
+  "files": [{ "pattern": "*/logo.png" }, { "pattern": "*/favicon.ico" }]
 }
 ```
 
-#### YAML Format
+If each directory needs a different rule set, the document itself can be an array of schema definitions.
 
-```yaml
-$schema: node_modules/@schemasset/schema/dist/schema.json
-targetDir: ./path/to/assets
-files:
-  - pattern: "*/logo.png"
-  - pattern: "*/favicon.ico"
-  - pattern: "*/og-image.png"
-  - pattern:
-      "*/header-logo.png"
-    optional: true
+```json
+[
+  {
+    "targetDir": "./dynamic-assets-a",
+    "files": [{ "pattern": "*/logo.png" }]
+  },
+  {
+    "targetDir": "./dynamic-assets-b",
+    "files": [{ "pattern": "*/favicon.ico" }]
+  }
+]
 ```
 
-### 2. Run the CLI
-
-```bash
-# If installed locally
-npx schemasset check -c schemasset.json
-
-# If installed globally
-schemasset check -c schemasset.json
-```
-
-### 🛠️ CLI Options
-
-The `schemasset` command line interface supports the following options:
-
-| Option | Alias | Description |
-|--------|-------|-------------|
-| `--config` | `-c` | Path to the schema config file (JSON or YAML format) |
-| `--cwd` | `-d` | Working directory for asset validation |
-| `--help` | `-h` | Display help information |
-| `--version` | `-v` | Display version information |
-
-Example usage with options:
-
-```bash
-# Specify a custom schema file
-npx schemasset check --config ./configs/custom-schema.yaml
-
-# Run from a specific working directory
-npx schemasset check --cwd ./project-directory
-```
-
-## 📚 API
-
-### 📝 Schema Definition
-
-Schema definition files follow this format:
+## API
 
 ```ts
 interface SchemaDef {
   $schema?: string;
-  targetDir: string;
+  targetDir: string | string[];
   files: SchemaDefFile[];
 }
 
+type SchemaDocument = SchemaDef | SchemaDef[];
+
 interface SchemaDefFile {
-  pattern: string; // glob pattern
-  optional?: boolean; // defaults to false
+  pattern: string;
+  optional?: boolean;
 }
 ```
 
-| Property | Description |
-|----------|-------------|
-| `targetDir` | Base directory for asset files |
-| `files` | Array of file pattern definitions to check |
-| `files[].pattern` | Glob pattern (e.g., `*/logo.png`) |
-| `files[].optional` | If `true`, file doesn't trigger an error when missing |
-
-### 💻 Programmatic Usage
-
-You can use the `@schemasset/core` package to perform schema checks programmatically:
+Programmatic usage:
 
 ```ts
 import { check, loadFiles, parse } from "@schemasset/core";
 
-// Parse schema definition file
-const schema = parse({
-  schemaFile: "path/to/schemasset.json",
+const parsed = parse({
+  schemaFile: "./schemasset.json",
 });
 
-const targetSchema = Array.isArray(schema.schema) ? schema.schema[0] : schema.schema;
+const definitions = Array.isArray(parsed.schema) ? parsed.schema : [parsed.schema];
+const results = (
+  await Promise.all(
+    definitions.map((definition) =>
+      loadFiles({
+        baseDir: definition.targetDir,
+        files: definition.files,
+      }),
+    ),
+  )
+).flat();
 
-// Load files based on schema patterns
-const results = await loadFiles({
-  baseDir: targetSchema.targetDir,
-  files: targetSchema.files,
-});
-
-// Perform the check
 const { diagnostics, hasError } = check({ results });
 
-// Process diagnostic results
 for (const diagnostic of diagnostics) {
   console.log(`[${diagnostic.code}] ${diagnostic.message}`);
 }
+
+if (hasError) {
+  process.exitCode = 1;
+}
+```
+
+## Integrations
+
+### Nuxt Module
+
+`@schemasset/nuxt` integrates asset validation into Nuxt builds.
+
+Current note:
+The Nuxt module currently expects a single schema definition with a single `targetDir`.
+
+[Read more about the Nuxt module](./packages/nuxt/README.md)
+
+## Development
+
+This repository uses:
+
+- Node `24.14.0`
+- `pnpm`
+- `Vite+`
+
+Common commands:
+
+```bash
+vp install
+vp run check
+vp run test
+vp run build
 ```

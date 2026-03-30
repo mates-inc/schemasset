@@ -20,8 +20,7 @@ export function copyDirectory(src: string, dest: string): void {
     if (entry.isDirectory()) {
       // Recursively copy subdirectories
       copyDirectory(srcPath, destPath);
-    }
-    else {
+    } else {
       // Ensure the destination directory exists
       const destDir = dirname(destPath);
       if (!existsSync(destDir)) {

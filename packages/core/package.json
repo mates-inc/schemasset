@@ -1,46 +1,46 @@
 {
   "name": "@schemasset/core",
-  "type": "module",
   "version": "0.0.7",
   "description": "Core functionality for schemasset - schema-based asset file validation",
-  "author": "ubugeeei",
-  "license": "MIT",
-  "homepage": "https://github.com/mates-system/schemasset/tree/main/packages/core#readme",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/mates-system/schemasset"
-  },
-  "bugs": {
-    "url": "https://github.com/mates-system/schemasset/issues"
-  },
   "keywords": [
     "asset",
-    "schema",
-    "validation",
     "file-structure",
-    "static-assets"
+    "schema",
+    "static-assets",
+    "validation"
   ],
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      }
-    }
+  "homepage": "https://github.com/mates-inc/schemasset/tree/main/packages/core#readme",
+  "bugs": {
+    "url": "https://github.com/mates-inc/schemasset/issues"
   },
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "license": "MIT",
+  "author": "ubugeeei",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mates-inc/schemasset"
+  },
   "files": [
     "dist"
   ],
-  "scripts": {
-    "build": "tsdown"
+  "type": "module",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      }
+    }
+  },
+  "dependencies": {
+    "@schemasset/schema": "workspace:*",
+    "fast-glob": "^3.3.3",
+    "js-yaml": "^4.1.0",
+    "valibot": "^1.3.1"
   },
   "devDependencies": {
-    "@schemasset/schema": "workspace:*",
-    "@types/js-yaml": "^4.0.9",
-    "fast-glob": "^3.3.3",
-    "js-yaml": "^4.1.0"
+    "@types/js-yaml": "^4.0.9"
   }
 }

@@ -1,7 +1,15 @@
 import type { CheckResult } from "@schemasset/core";
 import type { SchemaDef } from "@schemasset/schema";
 
-import { existsSync, readdirSync, readFileSync, rmdirSync, statSync, unlinkSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  readdirSync,
+  readFileSync,
+  rmdirSync,
+  statSync,
+  unlinkSync,
+  writeFileSync,
+} from "node:fs";
 import { basename, join, relative, resolve } from "node:path";
 import process from "node:process";
 
@@ -13,12 +21,16 @@ import { copyDirectory } from "./runtime/utils";
 // Create a logger with a specific prefix for this module
 const _logger = createLogger({ prefix: "@schemasset/nuxt" });
 
+type ModuleSchema = Omit<SchemaDef, "targetDir"> & {
+  targetDir: string;
+};
+
 export interface ModuleOptions {
   /**
    * Schema configuration
    * - object: Inline schema definition
    */
-  schema?: SchemaDef;
+  schema?: ModuleSchema;
 
   /**
    * Schema configuration
@@ -61,6 +73,16 @@ export interface ModuleOptions {
   verbose?: boolean;
 }
 
+declare module "nuxt/schema" {
+  interface NuxtConfig {
+    schemasset?: ModuleOptions;
+  }
+
+  interface NuxtOptions {
+    schemasset?: ModuleOptions;
+  }
+}
+
 export default defineNuxtModule<ModuleOptions>({
   meta: {
     name: "@schemasset/nuxt",
@@ -81,16 +103,13 @@ export default defineNuxtModule<ModuleOptions>({
     // Create log functions that respect the verbose setting
     const logger = {
       info: (message: string) => {
-        if (options.verbose)
-          _logger.info(message);
+        if (options.verbose) _logger.info(message);
       },
       log: (message: string) => {
-        if (options.verbose)
-          _logger.log(message);
+        if (options.verbose) _logger.log(message);
       },
       success: (message: string) => {
-        if (options.verbose)
-          _logger.success(message);
+        if (options.verbose) _logger.success(message);
       },
       // Always show warnings and errors
       warn: (message: string) => _logger.warn(message),
@@ -106,9 +125,10 @@ export default defineNuxtModule<ModuleOptions>({
       nuxt.hook("build:before", async () => {
         try {
           await copyAssets();
-        }
-        catch (error) {
-          logger.error(`Error during schema validation: ${error instanceof Error ? error.message : String(error)}`);
+        } catch (error) {
+          logger.error(
+            `Error during schema validation: ${error instanceof Error ? error.message : String(error)}`,
+          );
           if (options.failOnError) {
             throw error;
           }
@@ -118,9 +138,10 @@ export default defineNuxtModule<ModuleOptions>({
       nuxt.hook("nitro:build:before", async () => {
         try {
           await copyAssets();
-        }
-        catch (error) {
-          logger.error(`Error preparing asset processing: ${error instanceof Error ? error.message : String(error)}`);
+        } catch (error) {
+          logger.error(
+            `Error preparing asset processing: ${error instanceof Error ? error.message : String(error)}`,
+          );
         }
       });
     }
@@ -137,7 +158,9 @@ export default defineNuxtModule<ModuleOptions>({
 
       const subdirPath = resolve(baseDir, options.build?.subdir);
       if (!existsSync(subdirPath)) {
-        logger.warn(`Subdirectory to process for build not found: ${subdirPath}. Skipping asset copying for this path.`);
+        logger.warn(
+          `Subdirectory to process for build not found: ${subdirPath}. Skipping asset copying for this path.`,
+        );
         return;
       }
 
@@ -147,7 +170,10 @@ export default defineNuxtModule<ModuleOptions>({
       }
 
       // Check if targetDir starts with "public"
-      const isPublicPath = schema.targetDir.startsWith("public/") || schema.targetDir.startsWith("./public/") || schema.targetDir === "public";
+      const isPublicPath =
+        schema.targetDir.startsWith("public/") ||
+        schema.targetDir.startsWith("./public/") ||
+        schema.targetDir === "public";
 
       // Get the output directory name from options
       const outDir = options.build.outDir;
@@ -160,29 +186,27 @@ export default defineNuxtModule<ModuleOptions>({
       if (isPublicPath) {
         // For paths starting with "public"
         // Extract the part after "public/"
-        const publicSuffix = schema.targetDir === "public"
-          ? ""
-          : schema.targetDir.replace(/^\.?\/?(public)\/?/, "");
+        const publicSuffix =
+          schema.targetDir === "public" ? "" : schema.targetDir.replace(/^\.?\/?(public)\/?/, "");
 
         if (isOutDirNamedPublic) {
           // When outDir="public", avoid creating /public/public
           targetDir = resolve(nuxt.options.rootDir, "public", publicSuffix);
-          logger.info(`Special case: outDir is named "public" and targetDir starts with "public". Using target: ${targetDir}`);
-        }
-        else {
+          logger.info(
+            `Special case: outDir is named "public" and targetDir starts with "public". Using target: ${targetDir}`,
+          );
+        } else {
           // Normal case with public path
           targetDir = resolve(nuxt.options.rootDir, "public", publicSuffix, outDir);
           logger.info(`Public path detected: ${schema.targetDir}, using target: ${targetDir}`);
         }
-      }
-      else {
+      } else {
         // For non-public paths
         if (isOutDirNamedPublic) {
           // When outDir="public", avoid creating /public/public
           targetDir = resolve(nuxt.options.rootDir, "public");
           logger.info(`Special case: outDir is named "public". Using target: ${targetDir}`);
-        }
-        else {
+        } else {
           // Normal case
           targetDir = resolve(nuxt.options.rootDir, "public", outDir);
         }
@@ -196,14 +220,16 @@ export default defineNuxtModule<ModuleOptions>({
 
       if (isOutDirNamedPublic) {
         // When outDir is "public", use simpler paths for gitignore
-        relativeToPublic = isPublicPath && schema.targetDir !== "public"
-          ? schema.targetDir.replace(/^\.?\/?(public)\/?/, "")
-          : "";
-      }
-      else {
+        relativeToPublic =
+          isPublicPath && schema.targetDir !== "public"
+            ? schema.targetDir.replace(/^\.?\/?(public)\/?/, "")
+            : "";
+      } else {
         // Normal path calculation
         relativeToPublic = isPublicPath
-          ? (schema.targetDir === "public" ? outDir : resolve(schema.targetDir.replace(/^\.?\/?(public)\/?/, ""), outDir))
+          ? schema.targetDir === "public"
+            ? outDir
+            : resolve(schema.targetDir.replace(/^\.?\/?(public)\/?/, ""), outDir)
           : outDir;
       }
 
@@ -235,15 +261,17 @@ export default defineNuxtModule<ModuleOptions>({
         if (relativeAssetFiles.length === 0) {
           logger.warn(`No files found in ${subdirPath} to generate .gitignore entries`);
         }
-      }
-      catch (error) {
-        logger.error(`Error collecting files for .gitignore: ${error instanceof Error ? error.message : String(error)}`);
+      } catch (error) {
+        logger.error(
+          `Error collecting files for .gitignore: ${error instanceof Error ? error.message : String(error)}`,
+        );
       }
 
       // Also fix the fallback entry to avoid double slashes
-      const gitignoreEntries = relativeAssetFiles.length > 0
-        ? relativeAssetFiles.join("\n")
-        : `# No files found in source directory\n${gitignorePathPrefix}${relativeToPublic ? `/${relativeToPublic}` : ""}/*`;
+      const gitignoreEntries =
+        relativeAssetFiles.length > 0
+          ? relativeAssetFiles.join("\n")
+          : `# No files found in source directory\n${gitignorePathPrefix}${relativeToPublic ? `/${relativeToPublic}` : ""}/*`;
 
       updateGitignore(gitignorePath, gitignoreEntries);
 
@@ -251,25 +279,38 @@ export default defineNuxtModule<ModuleOptions>({
       copyDirectory(subdirPath, targetDir);
 
       // Adjust log message to match the path
-      const logPath = isPublicPath
-        ? `${schema.targetDir}/${outDir}`
-        : `public/${outDir}`;
-      logger.success(`Assets from subdirectory '${options.build?.subdir}' have been copied to '${logPath}'`);
+      const logPath = isPublicPath ? `${schema.targetDir}/${outDir}` : `public/${outDir}`;
+      logger.success(
+        `Assets from subdirectory '${options.build?.subdir}' have been copied to '${logPath}'`,
+      );
 
       return targetDir;
     }
 
     async function validateSchema(): Promise<{
-      schema: SchemaDef | null;
+      schema: ModuleSchema | null;
       baseDir: string;
       checkResult: CheckResult | null;
     }> {
-      if (!options.schema) {
+      if (!options.schema && !options.schemaPath) {
         logger.warn("No schema configuration found");
         return { schema: null, baseDir: "", checkResult: null };
       }
 
-      const schema = options.schema ?? parse({ schemaFile: options.schemaPath }).schema;
+      const parsedSchema = options.schema ?? parse({ schemaFile: options.schemaPath }).schema;
+      if (Array.isArray(parsedSchema)) {
+        logger.error("Nuxt module currently supports a single schema definition only");
+        return { schema: null, baseDir: "", checkResult: null };
+      }
+      if (Array.isArray(parsedSchema.targetDir)) {
+        logger.error("Nuxt module currently supports a single target directory only");
+        return { schema: null, baseDir: "", checkResult: null };
+      }
+
+      const schema: ModuleSchema = {
+        ...parsedSchema,
+        targetDir: parsedSchema.targetDir,
+      };
 
       logger.info("Using schema configuration:");
       logger.log(`- Target directory: ${schema.targetDir}`);
@@ -282,12 +323,15 @@ export default defineNuxtModule<ModuleOptions>({
         return { schema, baseDir, checkResult: null };
       }
 
-      const files = await loadFiles({ baseDir: schema.targetDir, files: schema.files });
+      const files = await loadFiles({ baseDir, files: schema.files });
       const checkResult = check({ results: files });
 
       for (const diagnostic of checkResult.diagnostics) {
-        const logMethod = diagnostic.severity === "error" ? logger.error : logger.warn;
-        logMethod(`[${diagnostic.code}] ${diagnostic.message}`);
+        if (diagnostic.severity === "error") {
+          logger.error(`[${diagnostic.code}] ${diagnostic.message}`);
+        } else {
+          logger.warn(`[${diagnostic.code}] ${diagnostic.message}`);
+        }
       }
 
       if (checkResult.hasError) {
@@ -310,16 +354,14 @@ export default defineNuxtModule<ModuleOptions>({
         const stats = statSync(path);
         if (stats.isFile()) {
           unlinkSync(path);
-        }
-        else if (stats.isDirectory()) {
+        } else if (stats.isDirectory()) {
           const files = readdirSync(path);
           for (const file of files) {
             deleteFileOrDirectory(join(path, file));
           }
           rmdirSync(path);
         }
-      }
-      catch (error) {
+      } catch (error) {
         console.error(`Error deleting ${path}:`, error);
       }
     }
@@ -333,7 +375,8 @@ export default defineNuxtModule<ModuleOptions>({
       endIndex: number;
       exists: boolean;
     } {
-      const gitignoreComment = "# @schemasset/nuxt - auto-generated asset files - DO NOT EDIT THIS SECTION MANUALLY";
+      const gitignoreComment =
+        "# @schemasset/nuxt - auto-generated asset files - DO NOT EDIT THIS SECTION MANUALLY";
       const gitignoreEndComment = "# End of @schemasset/nuxt auto-generated entries";
       const defaultResult = { patterns: [], startIndex: -1, endIndex: -1, exists: false };
 
@@ -352,15 +395,15 @@ export default defineNuxtModule<ModuleOptions>({
         const endIndex = gitignore.indexOf(gitignoreEndComment) + gitignoreEndComment.length;
 
         // Extract the content between markers
-        const sectionContent = gitignore.substring(
-          startIndex + gitignoreComment.length,
-          gitignore.indexOf(gitignoreEndComment),
-        ).trim();
+        const sectionContent = gitignore
+          .substring(startIndex + gitignoreComment.length, gitignore.indexOf(gitignoreEndComment))
+          .trim();
 
         // Extract actual paths, skipping comments and empty lines
-        const patterns = sectionContent.split("\n")
-          .map(line => line.trim())
-          .filter(line => line && !line.startsWith("#"));
+        const patterns = sectionContent
+          .split("\n")
+          .map((line) => line.trim())
+          .filter((line) => line && !line.startsWith("#"));
 
         return {
           patterns,
@@ -368,8 +411,7 @@ export default defineNuxtModule<ModuleOptions>({
           endIndex,
           exists: true,
         };
-      }
-      catch (error) {
+      } catch (error) {
         console.error(`Error extracting paths from .gitignore:`, error);
         return defaultResult;
       }
@@ -385,8 +427,7 @@ export default defineNuxtModule<ModuleOptions>({
 
         if (entry.isDirectory()) {
           results = results.concat(collectFilesRecursively(fullPath, basePath));
-        }
-        else if (entry.isFile()) {
+        } else if (entry.isFile()) {
           results.push(relativePath);
         }
       }
@@ -411,12 +452,15 @@ export default defineNuxtModule<ModuleOptions>({
 
       try {
         const gitignore = readFileSync(gitignorePath, "utf-8");
-        const newContent = gitignore.substring(0, autoGeneratedPaths.startIndex) + gitignore.substring(autoGeneratedPaths.endIndex);
+        const newContent =
+          gitignore.substring(0, autoGeneratedPaths.startIndex) +
+          gitignore.substring(autoGeneratedPaths.endIndex);
         writeFileSync(gitignorePath, newContent);
         logger.info("Cleaned up auto-generated entries in .gitignore");
-      }
-      catch (error) {
-        logger.error(`Error cleaning up .gitignore: ${error instanceof Error ? error.message : String(error)}`);
+      } catch (error) {
+        logger.error(
+          `Error cleaning up .gitignore: ${error instanceof Error ? error.message : String(error)}`,
+        );
       }
     }
 
@@ -424,7 +468,8 @@ export default defineNuxtModule<ModuleOptions>({
      * Handle gitignore file update with careful line break management
      */
     function updateGitignore(gitignorePath: string, gitignoreEntries: string): void {
-      const gitignoreComment = "# @schemasset/nuxt - auto-generated asset files - DO NOT EDIT THIS SECTION MANUALLY";
+      const gitignoreComment =
+        "# @schemasset/nuxt - auto-generated asset files - DO NOT EDIT THIS SECTION MANUALLY";
       const gitignoreEndComment = "# End of @schemasset/nuxt auto-generated entries";
 
       // Content block without extra newlines
@@ -442,7 +487,10 @@ export default defineNuxtModule<ModuleOptions>({
         let gitignoreContent = readFileSync(gitignorePath, "utf-8");
 
         // Handle the existing section if it exists
-        if (gitignoreContent.includes(gitignoreComment) && gitignoreContent.includes(gitignoreEndComment)) {
+        if (
+          gitignoreContent.includes(gitignoreComment) &&
+          gitignoreContent.includes(gitignoreEndComment)
+        ) {
           // Extract section indices
           const startIdx = gitignoreContent.indexOf(gitignoreComment);
           const endIdx = gitignoreContent.indexOf(gitignoreEndComment) + gitignoreEndComment.length;
@@ -471,7 +519,9 @@ export default defineNuxtModule<ModuleOptions>({
           }
 
           writeFileSync(gitignorePath, newContent);
-          logger.info(`Updated existing @schemasset/nuxt section in .gitignore with actual file paths`);
+          logger.info(
+            `Updated existing @schemasset/nuxt section in .gitignore with actual file paths`,
+          );
           return;
         }
 
@@ -486,9 +536,10 @@ export default defineNuxtModule<ModuleOptions>({
 
         writeFileSync(gitignorePath, newContent);
         logger.info(`Added @schemasset/nuxt section to .gitignore with actual file paths`);
-      }
-      catch (error) {
-        logger.error(`Error updating .gitignore: ${error instanceof Error ? error.message : String(error)}`);
+      } catch (error) {
+        logger.error(
+          `Error updating .gitignore: ${error instanceof Error ? error.message : String(error)}`,
+        );
       }
     }
   },

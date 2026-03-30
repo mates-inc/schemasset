@@ -1,19 +1,23 @@
 #!/usr/bin/env node
-import { defineCommand, runMain } from "citty";
+import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { cli, define } from "gunshi";
 import { check } from "./commands/check.js";
 
-const main = defineCommand({
-  meta: {
-    name: "schemasset",
-    version: "0.0.1",
-    description: "Asset management with schema validation",
-  },
+export const main = define({
+  entry: true,
+  name: "schemasset",
+  description: "Asset management with schema validation",
   subCommands: {
     check,
   },
 });
 
-// Run the CLI when this file is executed directly
-runMain(main);
+if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) {
+  const output = await cli(process.argv.slice(2), main);
+  if (output) {
+    process.stdout.write(`${output}\n`);
+  }
+}
 
 export default main;
